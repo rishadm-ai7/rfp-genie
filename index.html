@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RFP Genie</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      text-align: center;
+      padding-top: 50px;
+    }
+    h1 {
+      color: #333;
+    }
+    #presentationForm {
+      max-width: 400px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    input[type="submit"] {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+    #downloadButton {
+      display: none;
+      color: #4CAF50;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    #logo {
+      width: 200px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+
+<img id="logo" src="rfp-logo.jpeg" alt="RFP Genie Logo">
+
+<h1>RFP Genie</h1>
+
+<form id="presentationForm">
+  <label for="topic">Topic:</label><br>
+  <input type="text" id="topic" name="topic"><br>
+  <label for="num_slides">Number of Slides:</label><br>
+  <input type="number" id="num_slides" name="num_slides" min="1" max="50"><br><br>
+  <input type="submit" value="Generate">
+</form>
+
+<a id="downloadButton" style="display: none;">Download Presentation</a>
+
+<script>
+document.getElementById('presentationForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  var topic = document.getElementById('topic').value;
+  var num_slides = document.getElementById('num_slides').value;
+
+  fetch('http://localhost:8000/generate_presentation/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      topic: topic,
+      num_slides: num_slides,
+    }),
+  })
+  .then(response => response.blob())
+  .then(blob => {
+    // Create a URL for the presentation blob
+    var url = URL.createObjectURL(blob);
+
+    // Get the download button and update its properties
+    var downloadButton = document.getElementById('downloadButton');
+    downloadButton.href = url;
+    downloadButton.download = 'presentation.pptx';
+    downloadButton.style.display = 'block';
+  });
+});
+</script>
+
+</body>
+</html>
